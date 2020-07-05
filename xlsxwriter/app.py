@@ -33,6 +33,7 @@ class App(xmlwriter.XMLwriter):
         self.part_names = []
         self.heading_pairs = []
         self.properties = {}
+        self.readonly_recommended = False
 
     def _add_part_name(self, part_name):
         # Add the name of a workbook Part such as 'Sheet1' or 'Print_Titles'.
@@ -109,7 +110,11 @@ class App(xmlwriter.XMLwriter):
 
     def _write_doc_security(self):
         # Write the <DocSecurity> element.
-        self._xml_data_element('DocSecurity', '0')
+        if self.readonly_recommended:
+            doc_security = '2'
+        else:
+            doc_security = '0'
+        self._xml_data_element('DocSecurity', doc_security)
 
     def _write_scale_crop(self):
         # Write the <ScaleCrop> element.
@@ -194,3 +199,4 @@ class App(xmlwriter.XMLwriter):
     def _write_app_version(self):
         # Write the <AppVersion> element.
         self._xml_data_element('AppVersion', '12.0000')
+

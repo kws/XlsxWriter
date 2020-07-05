@@ -319,6 +319,8 @@ class Packager(object):
 
         app._set_properties(properties)
 
+        app.readonly_recommended = self.workbook.readonly_recommended
+
         app._set_xml_writer(self._filename('docProps/app.xml'))
         app._assemble_xml_file()
 

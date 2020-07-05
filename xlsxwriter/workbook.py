@@ -136,6 +136,7 @@ class Workbook(xmlwriter.XMLwriter):
         self.allow_zip64 = False
         self.calc_id = 124519
         self.has_comments = False
+        self.readonly_recommended=False
 
         # We can't do 'constant_memory' mode while doing 'in_memory' mode.
         if self.in_memory:
@@ -580,6 +581,21 @@ class Workbook(xmlwriter.XMLwriter):
         else:
             self.vba_codename = 'ThisWorkbook'
 
+    def set_readonly_recommended(self, value):
+        """
+        Set the readonly recommended flag for this workbook. By default this is
+        set to False. If this is set to true, Excel will by default try to open
+        this workbook in read-only mode.
+
+        Args:
+            value: True to set the readonly flag.
+
+        Returns:
+            Nothing.
+
+        """
+        self.readonly_recommended = value
+
     ###########################################################################
     #
     # Private API.
@@ -600,6 +616,9 @@ class Workbook(xmlwriter.XMLwriter):
 
         # Write the fileVersion element.
         self._write_file_version()
+
+        # Write the file sharing element
+        self._write_file_sharing()
 
         # Write the workbookPr element.
         self._write_workbook_pr()
@@ -1689,6 +1708,11 @@ class Workbook(xmlwriter.XMLwriter):
                 ('codeName', '{37E998C4-C9E5-D4B9-71C8-EB1FF731991C}'))
 
         self._xml_empty_tag('fileVersion', attributes)
+
+    def _write_file_sharing(self):
+        # Write <fileSharing> element.
+        if self.readonly_recommended:
+            self._xml_empty_tag('fileSharing', [('readOnlyRecommended', '1')])
 
     def _write_workbook_pr(self):
         # Write <workbookPr> element.
